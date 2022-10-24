@@ -1,0 +1,22 @@
+{
+  "name": "midas-stream-consumer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-kinesis": "^3.193.0",
+    "@dazn/lambda-powertools-logger": "^1.28.1",
+    "aws-kinesis-agg": "^4.2.6",
+    "esbuild": "^0.15.12",
+    "ion-js": "^4.3.0",
+    "redis": "^4.3.1",
+    "serverless-esbuild": "^1.33.0",
+    "serverless-iam-roles-per-function": "^3.2.0"
+  }
+}

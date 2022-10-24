@@ -1,0 +1,79 @@
+service: midas-stream-consumer
+frameworkVersion: "2 || 3"
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  memorySize: 512
+  stage: ${opt:stage, 'dev'}
+  region: ap-southeast-1
+  # lambdaHashingVersion: "20201221"  #deprecated
+  tracing:
+    apiGateway: true
+    lambda: true # Optional, can be true (true equals 'Active'), 'Active' or 'PassThrough'
+  environment:
+    JournalUrl: "https://sqs.ap-southeast-1.amazonaws.com/271524046545/journal-queue"
+    StatisticUrl: "https://sqs.ap-southeast-1.amazonaws.com/271524046545/StatisticQueue"
+
+plugins:
+  - serverless-iam-roles-per-function
+  - serverless-esbuild
+
+functions:
+  streamConsumer:
+    name: midas-stream-consumer-${self:provider.stage}
+    handler: functions/midas-stream.handler
+    vpc:
+      securityGroupIds: 
+        - sg-07b60f616217f4f9b
+      subnetIds:
+        - subnet-0abdeafc417c6584c    
+    iamRoleStatementsName: midas-stream-consumer-lambda-role-${self:provider.stage}
+    iamRoleStatements: # Grant privilege read from Kinesis work stream
+      - Effect: Allow
+        Action:
+          - "execute-api:ManageConnections"
+        Resource:
+          - "arn:aws:execute-api:*:*:**/@connections/*"
+          - "arn:aws:execute-api:*:*:*/@connections/*"
+      - Effect: Allow
+        Action:
+          - kinesis:GetRecords
+          - kinesis:GetShardIterator
+          - kinesis:DescribeStream
+          - kinesis:ListStreams
+          - kinesis:PutRecord
+          - kinesis:PutRecords
+        Resource:
+          - !Sub "arn:aws:kinesis:ap-southeast-1:271524046545:stream/midas-stream-consumer"  #kinesis resource, see at resource section below
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:Scan
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+          - dynamodb:UpdateItem
+          - dynamodb:DeleteItem
+        Resource:
+          - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*"
+      - Effect: "Allow"
+        Action:
+          - "xray:PutTraceSegments"
+          - "xray:PutTelemetryRecords"
+        Resource: "*"
+      - Effect: Allow
+        Action:
+          - SQS:SendMessage
+          - SQS:DeleteMessage
+          - SQS:GetQueueUrl
+          - SQS:ReceiveMessage
+        Resource:
+          - !Sub "arn:aws:sqs:ap-southeast-1:271524046545:journal-queue"
+          - !Sub "arn:aws:sqs:ap-southeast-1:271524046545:StatisticQueue"
+
+    # JournalQueue:
+    #   Type: AWS::SQS::Queue
+    #   Properties:
+    #     QueueName: journal-queue
+    #     MessageRetentionPeriod: 60
+    #     ReceiveMessageWaitTimeSeconds: 5
