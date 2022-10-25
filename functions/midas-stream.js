@@ -196,7 +196,7 @@ async function processIon(ionRecord) {
       payload: JSON.stringify(payload),
     });
 
-    console.log("SQS: " + JSON.stringify(sqsMessage));
+    console.log("SQS Journal: " + JSON.stringify(sqsMessage));
 
     const sqsMessageStatistic = await sendMessage({
       url: StatisticUrl,
@@ -232,9 +232,9 @@ async function processIon(ionRecord) {
         //wsConnectionId not found
       } else {
         //hit websocket to update
+        
         const wsMessage = { totalBalance: currentBalance };
-        console.log("response: ", response);
-        console.log("wsMessage: ", wsMessage);
+
         await sendWebsocketMessage(
           response.userWebsocket.wsConnectionId,
           JSON.stringify(wsMessage)
