@@ -231,19 +231,19 @@ async function processIon(ionRecord) {
       payload: JSON.stringify(payload),
     });
 
-    console.log("SQS: " + JSON.stringify(sqsMessage));
+    console.log("SQS Journal: " + JSON.stringify(sqsMessage));
 
     const sqsMessage1 = await sendMessage({
       url: StatisticUrl,
       payload: JSON.stringify(payload),
     });
 
-    console.log("SQS: " + JSON.stringify(sqsMessage1));
+    console.log("SQS statistic: " + JSON.stringify(sqsMessage1));
 
     // DDB Wager insertion
     // await insertOne(brandUsername, brandId, username, currentBalance, previousBalance, bonusCurrentBalance, bonusPreviousBalance, bonusAdjustAmount, adjustAmount, txType, txTypeAtt1, txTypeAtt2, txTypeAtt3, gameId, providerId, reference, roundDetails, roundId, gpTimestamp, createdAt, usedPromo, jackpotId);
     const redisKey = 'pdc:' + brandUsername; 
-    // selfmade optimistic lock :D
+    // selfmade optimistic lock
     const invoker = await redisCache(client, redisKey, createdAt);
     console.log('data Redis:' + (createdAt < invoker));
 
@@ -260,9 +260,9 @@ async function processIon(ionRecord) {
         //wsConnectionId not found
       } else {
         //hit websocket to update
+        
         const wsMessage = { totalBalance: currentBalance };
-        console.log("response: ", response);
-        console.log("wsMessage: ", wsMessage);
+
         await sendWebsocketMessage(
           response.userWebsocket.wsConnectionId,
           JSON.stringify(wsMessage)
