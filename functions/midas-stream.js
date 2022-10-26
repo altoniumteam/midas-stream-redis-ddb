@@ -104,6 +104,7 @@ async function processIon(ionRecord) {
     const campaignType = ionRecord.metadata.campaignType;
     const campaignId = ionRecord.metadata.campaignId;
     const statistic = ionRecord.statistic;
+    const bonusStatistic = ionRecord.bonusStatistic;
 
     debug("*** playerWallet Table, execute! ***");
     debug(brandUsername);
@@ -186,6 +187,7 @@ async function processIon(ionRecord) {
       campaignId:
         txTypeAtt1 == "Deposit" || txTypeAtt1 == "Withdraw" ? "" : campaignId,
       statistic,
+      bonusStatistic,
     };
 
     console.log("PAYLOAD: " + JSON.stringify(payload));
@@ -232,7 +234,7 @@ async function processIon(ionRecord) {
         //wsConnectionId not found
       } else {
         //hit websocket to update
-        
+
         const wsMessage = { totalBalance: currentBalance };
 
         await sendWebsocketMessage(
