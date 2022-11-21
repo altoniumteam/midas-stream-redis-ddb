@@ -2,7 +2,7 @@ const { createClient } = require('redis');
 const { load, dumpPrettyText } = require('ion-js');
 const { deaggregateSync } = require('aws-kinesis-agg');
 const { debug } = require('@dazn/lambda-powertools-logger');
-const { updateBalance, getWsConnectionId } = require("./helper/midas-ddb-helper");
+const { updateBalance, updateCryptoBalance, getWsConnectionId } = require("./helper/midas-ddb-helper");
 const { sendWebsocketMessage } = require("./helper/update-balance-websocket");
 const { sendMessage } = require("./helper/midas-sqs");
 
@@ -84,6 +84,10 @@ async function processIon(ionRecord) {
       ionRecord.bonusCurrentBalance;
     const bonusPreviousBalance =
       ionRecord.bonusPreviousBalance;
+    const activeWallet =
+      ionRecord.activeWallet;
+    const cryptoBalance =
+      ionRecord.cryptoBalance;
     const bonusAdjustAmount =
       ionRecord.bonusAdjustAmount;
     const adjustAmount =
@@ -132,6 +136,8 @@ async function processIon(ionRecord) {
       ionRecord.metadata.campaignId;
     const statistic =
       ionRecord.statistic;
+    const cryptoPreviousBalance = 
+      ionRecord.cryptoPreviousBalance
 
     debug("*** playerWallet Table, execute! ***");
     debug(brandUsername);
@@ -142,6 +148,8 @@ async function processIon(ionRecord) {
     debug(bonusCurrentBalance);
     debug(bonusPreviousBalance);
     debug(bonusAdjustAmount);
+    debug(activeWallet);
+    debug(cryptoBalance);
     debug(adjustAmount);
     debug(txType);
     debug(txTypeAtt1);
@@ -156,6 +164,7 @@ async function processIon(ionRecord) {
     debug(createdAt);
     debug(usedPromo);
     debug(jackpotId);
+    debug(cryptoPreviousBalance);
 
     // await client.quit();
 
@@ -169,6 +178,8 @@ async function processIon(ionRecord) {
       bonusCurrentBalance,
       bonusPreviousBalance,
       bonusAdjustAmount,
+      activeWallet,
+      cryptoBalance,
       adjustAmount,
       validBetAmount,
       txType,
@@ -251,7 +262,11 @@ async function processIon(ionRecord) {
       return console.log('data update ke dynamo dan ws skipped');
     } else {
       // DDB updateBalance
-      await updateBalance(brandUsername, previousBalance, currentBalance);      
+      if (activeWallet == 'MAIN') {
+        await updateBalance(brandUsername, previousBalance, currentBalance);   
+      } else {
+        await updateCryptoBalance(brandUsername, activeWallet, cryptoBalance[activeWallet], cryptoPreviousBalance[activeWallet]);
+      }
       
       //start: update player balance websocket
       console.log(brandUsername);
@@ -261,7 +276,15 @@ async function processIon(ionRecord) {
       } else {
         //hit websocket to update
         
-        const wsMessage = { totalBalance: currentBalance };
+        const wsMessage = {
+          MAIN: currentBalance,
+          BONUS: bonusCurrentBalance,
+          BTC: cryptoBalance['BTC'],
+          ETH: cryptoBalance['ETH'],
+          DOGE: cryptoBalance['DOGE'],
+          BSC: cryptoBalance['BSC'],
+          SHIB: cryptoBalance['SHIB']            
+        };
 
         await sendWebsocketMessage(
           response.userWebsocket.wsConnectionId,

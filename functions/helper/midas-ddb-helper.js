@@ -35,6 +35,42 @@ export async function updateBalance(
   }
 }
 
+export async function updateCryptoBalance(
+  brandUsername,
+  currency,
+  currentBalance,
+  previousBalance,
+) {
+  console.log('currentBalance: ', currentBalance)
+  console.log('previousBalance: ', previousBalance)
+  let params = {
+    TableName: "midasUser",
+    // this is your DynamoDB Table
+    Key: {
+      brandUsername: "",
+      //find the itemId in the table that you pull from the event
+    },
+    UpdateExpression: `set cryptoBalance.${currency}.currentBalance = :a, cryptoBalance.${currency}.previousBalance = :b`,
+    // This expression is what updates the item attribute
+    ExpressionAttributeValues: {
+      ":a": 0,
+      ":b": 0,
+      //create an Expression Attribute Value to pass in the expression above
+    },
+    ReturnValues: "UPDATED_NEW",
+    // Return the newly updated values
+  };
+  params.Key.brandUsername = brandUsername;
+  params.ExpressionAttributeValues[":a"] = currentBalance;
+  params.ExpressionAttributeValues[":b"] = previousBalance;
+  try {
+    await docClient.update(params).promise();
+    console.log('update crypto sukses')
+  } catch (err) {
+    return err;
+  }
+}
+
 export async function insertOne(brandUsername, brandId, username, currentBalance, previousBalance, bonusCurrentBalance, bonusPreviousBalance, bonusAdjustAmount, adjustAmount, txType, txTypeAtt1, txTypeAtt2, txTypeAtt3, gameId, providerId, reference, roundDetails, roundId, gpTimestamp, createdAt, usedPromo, jackpotId) {
   const params = {
     TableName: 'midasWager',
