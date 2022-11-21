@@ -8,37 +8,38 @@ const { sendMessage } = require("./helper/midas-sqs");
 
 let client;
 
-if (typeof client === 'undefined') {
+if (typeof client === "undefined") {
   client = createClient({
-      url: 'redis://midascache.c7fgoy.ng.0001.apse1.cache.amazonaws.com:6379'
+    url: "redis://midascache.c7fgoy.ng.0001.apse1.cache.amazonaws.com:6379",
   });
-  client.connect()
-}  else {
-  console.log('socket masih kebuka')
+  client.connect();
+} else {
+  console.log("socket masih kebuka");
 }
 
 const computeChecksums = true;
 
 const JournalUrl = process.env.JournalUrl;
 const StatisticUrl = process.env.StatisticUrl;
+const BonusSystemUrl = process.env.BonusSystemUrl;
 
 const redisCache = async (client, key, value) => {
-    console.log("START", value);
-    let result
-    try {
-      client.on('error', (err) => console.log("Redis error", err));
-      
-      result = await client.get(key);
+  console.log("START", value);
+  let result;
+  try {
+    client.on("error", (err) => console.log("Redis error", err));
 
-      if (result == null || result == undefined) {
-        result = await client.set(key, value)         
-      };
+    result = await client.get(key);
 
-      return result;
-    } catch(err) {
-      console.log(err);
-      return err;
-    };
+    if (result == null || result == undefined) {
+      result = await client.set(key, value);
+    }
+
+    return result;
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
 };
 
 const promiseDeaggregate = (record) =>
@@ -61,8 +62,7 @@ async function processIon(ionRecord) {
 
   // debug(`Version ${version} and id ${id}`);
 
-
-  console.log('ionRecord: ' + JSON.stringify(ionRecord));
+  console.log("ionRecord: " + JSON.stringify(ionRecord));
 
   // Check to see if the data section exists.
   if (ionRecord == null || !ionRecord) {
@@ -186,24 +186,19 @@ async function processIon(ionRecord) {
       txTypeAtt1,
       txTypeAtt2,
       txTypeAtt3,
-      gameId:
-        txTypeAtt1 == "Deposit" || txTypeAtt1 == "Withdraw" ? "" : gameId,
+      gameId: txTypeAtt1 == "Deposit" || txTypeAtt1 == "Withdraw" ? "" : gameId,
       providerId:
         txTypeAtt1 == "Deposit" || txTypeAtt1 == "Withdraw" ? "" : providerId,
       reference:
         txTypeAtt1 == "Deposit" || txTypeAtt1 == "Withdraw" ? "" : reference,
       roundDetails:
-        txTypeAtt1 == "Deposit" || txTypeAtt1 == "Withdraw"
-          ? ""
-          : roundDetails,
+        txTypeAtt1 == "Deposit" || txTypeAtt1 == "Withdraw" ? "" : roundDetails,
       roundId:
         txTypeAtt1 == "Deposit" || txTypeAtt1 == "Withdraw" ? "" : roundId,
       bonusCode:
         txTypeAtt1 == "Deposit" || txTypeAtt1 == "Withdraw" ? "" : bonusCode,
       gpTimestamp:
-        txTypeAtt1 == "Deposit" || txTypeAtt1 == "Withdraw"
-          ? ""
-          : gpTimestamp,
+        txTypeAtt1 == "Deposit" || txTypeAtt1 == "Withdraw" ? "" : gpTimestamp,
       createdAt,
       usedPromo:
         txTypeAtt1 == "Deposit" || txTypeAtt1 == "Withdraw" ? "" : usedPromo,
@@ -226,12 +221,11 @@ async function processIon(ionRecord) {
           ? ""
           : promoWinReference,
       campaignType:
-        txTypeAtt1 == "Deposit" || txTypeAtt1 == "Withdraw"
-          ? ""
-          : campaignType,
+        txTypeAtt1 == "Deposit" || txTypeAtt1 == "Withdraw" ? "" : campaignType,
       campaignId:
         txTypeAtt1 == "Deposit" || txTypeAtt1 == "Withdraw" ? "" : campaignId,
       statistic,
+      bonusStatistic,
     };
 
     console.log("PAYLOAD: " + JSON.stringify(payload));
@@ -244,22 +238,29 @@ async function processIon(ionRecord) {
 
     console.log("SQS Journal: " + JSON.stringify(sqsMessage));
 
-    const sqsMessage1 = await sendMessage({
+    const sqsMessageStatistic = await sendMessage({
       url: StatisticUrl,
       payload: JSON.stringify(payload),
     });
 
-    console.log("SQS statistic: " + JSON.stringify(sqsMessage1));
+    console.log("SQS: " + JSON.stringify(sqsMessageStatistic));
+
+    const sqsMessageBonusSystem = await sendMessage({
+      url: BonusSystemUrl,
+      payload: JSON.stringify(payload),
+    });
+
+    console.log("SQS: " + JSON.stringify(sqsMessageBonusSystem));
 
     // DDB Wager insertion
     // await insertOne(brandUsername, brandId, username, currentBalance, previousBalance, bonusCurrentBalance, bonusPreviousBalance, bonusAdjustAmount, adjustAmount, txType, txTypeAtt1, txTypeAtt2, txTypeAtt3, gameId, providerId, reference, roundDetails, roundId, gpTimestamp, createdAt, usedPromo, jackpotId);
-    const redisKey = 'pdc:' + brandUsername; 
-    // selfmade optimistic lock
+    const redisKey = "pdc:" + brandUsername;
+    // selfmade optimistic lock :D
     const invoker = await redisCache(client, redisKey, createdAt);
-    console.log('data Redis:' + (createdAt < invoker));
+    console.log("data Redis:" + (createdAt < invoker));
 
     if (createdAt < invoker) {
-      return console.log('data update ke dynamo dan ws skipped');
+      return console.log("data update ke dynamo dan ws skipped");
     } else {
       // DDB updateBalance
       if (activeWallet == 'MAIN') {
@@ -299,7 +300,7 @@ async function processIon(ionRecord) {
     // do an upsert so it doesn't matter if it is the initial version or not
     //await updateLicence(id, points, postcode, version);
   }
-};  
+}
 
 async function processRecords(records) {
   await Promise.all(
@@ -314,28 +315,28 @@ async function processRecords(records) {
       const b = JSON.parse(a);
 
       // Only process records where the record type is REVISION_DETAILS
-    //   if (ionRecord.recordType !== REVISION_DETAILS) {
-    //     debug(
-    //       `Skipping record of type ${dumpPrettyText(ionRecord.recordType)}`
-    //     );
-    //   } else {
-        debug(`Ion Record: ${dumpPrettyText(b)}`);
-        await processIon(b);
-    //   }
+      //   if (ionRecord.recordType !== REVISION_DETAILS) {
+      //     debug(
+      //       `Skipping record of type ${dumpPrettyText(ionRecord.recordType)}`
+      //     );
+      //   } else {
+      debug(`Ion Record: ${dumpPrettyText(b)}`);
+      await processIon(b);
+      //   }
     })
   );
-}  
+}
 
 module.exports.handler = async (event) => {
-    console.log(event)
-    try {
-        await Promise.all(
-            event.Records.map(async (kinesisRecord) => {
-            const records = await promiseDeaggregate(kinesisRecord.kinesis);
-            await processRecords(records);
-            })
-        );        
-    } catch (err) {
-        Promise.reject(`Kinesis Consumer Error: ${err}`);
-    }    
+  console.log(event);
+  try {
+    await Promise.all(
+      event.Records.map(async (kinesisRecord) => {
+        const records = await promiseDeaggregate(kinesisRecord.kinesis);
+        await processRecords(records);
+      })
+    );
+  } catch (err) {
+    Promise.reject(`Kinesis Consumer Error: ${err}`);
+  }
 };

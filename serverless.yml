@@ -14,6 +14,7 @@ provider:
   environment:
     JournalUrl: "https://sqs.ap-southeast-1.amazonaws.com/271524046545/journal-queue"
     StatisticUrl: "https://sqs.ap-southeast-1.amazonaws.com/271524046545/StatisticQueue"
+    BonusSystemUrl: "https://sqs.ap-southeast-1.amazonaws.com/271524046545/BonusSystemQueue"
 
 plugins:
   - serverless-iam-roles-per-function
@@ -24,10 +25,10 @@ functions:
     name: midas-stream-consumer-${self:provider.stage}
     handler: functions/midas-stream.handler
     vpc:
-      securityGroupIds: 
+      securityGroupIds:
         - sg-07b60f616217f4f9b
       subnetIds:
-        - subnet-0abdeafc417c6584c    
+        - subnet-0abdeafc417c6584c
     iamRoleStatementsName: midas-stream-consumer-lambda-role-${self:provider.stage}
     iamRoleStatements: # Grant privilege read from Kinesis work stream
       - Effect: Allow
@@ -45,7 +46,7 @@ functions:
           - kinesis:PutRecord
           - kinesis:PutRecords
         Resource:
-          - !Sub "arn:aws:kinesis:ap-southeast-1:271524046545:stream/midas-stream-consumer"  #kinesis resource, see at resource section below
+          - !Sub "arn:aws:kinesis:ap-southeast-1:271524046545:stream/midas-stream-consumer" #kinesis resource, see at resource section below
       - Effect: Allow
         Action:
           - dynamodb:Query
@@ -70,6 +71,7 @@ functions:
         Resource:
           - !Sub "arn:aws:sqs:ap-southeast-1:271524046545:journal-queue"
           - !Sub "arn:aws:sqs:ap-southeast-1:271524046545:StatisticQueue"
+          - !Sub "arn:aws:sqs:ap-southeast-1:271524046545:BonusSystemQueue"
 
     # JournalQueue:
     #   Type: AWS::SQS::Queue
