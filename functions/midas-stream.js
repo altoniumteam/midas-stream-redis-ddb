@@ -138,6 +138,8 @@ async function processIon(ionRecord) {
       ionRecord.statistic;
     const cryptoPreviousBalance = 
       ionRecord.cryptoPreviousBalance
+    const bonusStatistic = 
+      ionRecord.bonusStatistic
 
     debug("*** playerWallet Table, execute! ***");
     debug(brandUsername);
@@ -165,6 +167,7 @@ async function processIon(ionRecord) {
     debug(usedPromo);
     debug(jackpotId);
     debug(cryptoPreviousBalance);
+    debug(bonusStatistic);
 
     // await client.quit();
 
