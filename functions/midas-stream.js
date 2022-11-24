@@ -267,7 +267,7 @@ async function processIon(ionRecord) {
     } else {
       // DDB updateBalance
       if (activeWallet == 'MAIN') {
-        await updateBalance(brandUsername, previousBalance, currentBalance);   
+        await updateBalance(brandUsername, previousBalance, currentBalance, bonusCurrentBalance, bonusPreviousBalance);   
       } else {
         await updateCryptoBalance(brandUsername, activeWallet, cryptoBalance[activeWallet], cryptoPreviousBalance[activeWallet]);
       }
@@ -287,7 +287,8 @@ async function processIon(ionRecord) {
           ETH: cryptoBalance['ETH'],
           DOGE: cryptoBalance['DOGE'],
           BSC: cryptoBalance['BSC'],
-          SHIB: cryptoBalance['SHIB']            
+          SHIB: cryptoBalance['SHIB'],         
+          USDT: cryptoBalance['USDT'],         
         };
 
         await sendWebsocketMessage(

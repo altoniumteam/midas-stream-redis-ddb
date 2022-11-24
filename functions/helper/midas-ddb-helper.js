@@ -5,7 +5,9 @@ const docClient = new DynamoDB.DocumentClient();
 export async function updateBalance(
   brandUsername,
   previousBalance,
-  currentBalance
+  currentBalance,
+  bonusCurrentBalance,
+  bonusPreviousBalance
 ) {
   let params = {
     TableName: "midasUser",
@@ -14,11 +16,13 @@ export async function updateBalance(
       brandUsername: "",
       //find the itemId in the table that you pull from the event
     },
-    UpdateExpression: "set previousBalance = :a, currentBalance = :b",
+    UpdateExpression: "set previousBalance = :a, currentBalance = :b, bonusCurrentBalance = :c, bonusPreviousBalance = :d",
     // This expression is what updates the item attribute
     ExpressionAttributeValues: {
       ":a": 0,
       ":b": 0,
+      ":c": 0,
+      ":d": 0
       //create an Expression Attribute Value to pass in the expression above
     },
     ReturnValues: "UPDATED_NEW",
@@ -27,6 +31,8 @@ export async function updateBalance(
   params.Key.brandUsername = brandUsername;
   params.ExpressionAttributeValues[":a"] = previousBalance;
   params.ExpressionAttributeValues[":b"] = currentBalance;
+  params.ExpressionAttributeValues[":c"] = bonusCurrentBalance;
+  params.ExpressionAttributeValues[":d"] = bonusPreviousBalance;
   try {
     await docClient.update(params).promise();
     console.log('update sukses')
