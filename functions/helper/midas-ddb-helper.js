@@ -46,9 +46,15 @@ export async function updateCryptoBalance(
   currency,
   currentBalance,
   previousBalance,
+  currencyTarget,
+  targetCurrentBalance,
+  targetPreviousBalance,
+  type
 ) {
+  let params;
   console.log('currentBalance: ', currentBalance)
   console.log('previousBalance: ', previousBalance)
+  if (type == 'swap') {
   let params = {
     TableName: "midasUser",
     // this is your DynamoDB Table
@@ -56,19 +62,47 @@ export async function updateCryptoBalance(
       brandUsername: "",
       //find the itemId in the table that you pull from the event
     },
-    UpdateExpression: `set cryptoBalance.${currency}.currentBalance = :a, cryptoBalance.${currency}.previousBalance = :b`,
+    UpdateExpression: `set cryptoBalance.${currency}.currentBalance = :a, cryptoBalance.${currency}.previousBalance = :b, cryptoBalance.${currencyTarget}.currentBalance = :c, cryptoBalance.${currencyTarget}.previousBalance = :d`,
     // This expression is what updates the item attribute
     ExpressionAttributeValues: {
       ":a": 0,
       ":b": 0,
+      ":c": 0,
+      ":d": 0
       //create an Expression Attribute Value to pass in the expression above
     },
     ReturnValues: "UPDATED_NEW",
     // Return the newly updated values
   };
-  params.Key.brandUsername = brandUsername;
-  params.ExpressionAttributeValues[":a"] = currentBalance;
-  params.ExpressionAttributeValues[":b"] = previousBalance;
+    params.Key.brandUsername = brandUsername;
+    params.ExpressionAttributeValues[":a"] = currentBalance;
+    params.ExpressionAttributeValues[":b"] = previousBalance;
+    params.ExpressionAttributeValues[":c"] = targetCurrentBalance;
+    params.ExpressionAttributeValues[":d"] = targetPreviousBalance;
+
+  } else {
+    params = {
+      TableName: "midasUser",
+      // this is your DynamoDB Table
+      Key: {
+        brandUsername: "",
+        //find the itemId in the table that you pull from the event
+      },
+      UpdateExpression: `set cryptoBalance.${currency}.currentBalance = :a, cryptoBalance.${currency}.previousBalance = :b`,
+      // This expression is what updates the item attribute
+      ExpressionAttributeValues: {
+        ":a": 0,
+        ":b": 0,
+        //create an Expression Attribute Value to pass in the expression above
+      },
+      ReturnValues: "UPDATED_NEW",
+      // Return the newly updated values
+    };
+    params.Key.brandUsername = brandUsername;
+    params.ExpressionAttributeValues[":a"] = currentBalance;
+    params.ExpressionAttributeValues[":b"] = previousBalance;
+  }
+
   try {
     await docClient.update(params).promise();
     console.log('update crypto sukses')

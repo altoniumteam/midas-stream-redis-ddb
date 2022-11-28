@@ -136,10 +136,20 @@ async function processIon(ionRecord) {
       ionRecord.metadata.campaignId;
     const statistic =
       ionRecord.statistic;
-    const cryptoPreviousBalance = 
-      ionRecord.cryptoPreviousBalance
     const bonusStatistic = 
       ionRecord.bonusStatistic
+    const currency =
+      ionRecord.currency;
+    const targetCurrency =
+      ionRecord.targetCurrency;
+    const cryptoCurrentBalance =
+      ionRecord.cryptoCurrentBalance
+    const cryptoPreviousBalance = 
+      ionRecord.cryptoPreviousBalance
+    const targetCryptoCurrentBalance =
+      ionRecord.targetCryptoCurrentBalance
+    const targetCryptoPreviousBalance =
+      ionRecord.targetCryptoPreviousBalance
 
     debug("*** playerWallet Table, execute! ***");
     debug(brandUsername);
@@ -269,7 +279,14 @@ async function processIon(ionRecord) {
       if (activeWallet == 'MAIN') {
         await updateBalance(brandUsername, previousBalance, currentBalance, bonusCurrentBalance, bonusPreviousBalance);   
       } else {
-        await updateCryptoBalance(brandUsername, activeWallet, cryptoBalance[activeWallet], cryptoPreviousBalance[activeWallet]);
+        switch (txTypeAtt1) {
+          case 'swap':
+            await updateCryptoBalance(brandUsername, currency, cryptoCurrentBalance, cryptoPreviousBalance, targetCurrency, targetCryptoCurrentBalance, targetCryptoPreviousBalance, txTypeAtt1);
+            break;
+          default:
+            await updateCryptoBalance(brandUsername, activeWallet, cryptoBalance[activeWallet], cryptoPreviousBalance[activeWallet]);
+            break;
+        }
       }
       
       //start: update player balance websocket
@@ -279,7 +296,6 @@ async function processIon(ionRecord) {
         //wsConnectionId not found
       } else {
         //hit websocket to update
-        
         const wsMessage = {
           MAIN: currentBalance,
           BONUS: bonusCurrentBalance,
