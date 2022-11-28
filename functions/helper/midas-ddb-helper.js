@@ -77,7 +77,30 @@ export async function updateCryptoBalance(
   }
 }
 
-export async function insertOne(brandUsername, brandId, username, currentBalance, previousBalance, bonusCurrentBalance, bonusPreviousBalance, bonusAdjustAmount, adjustAmount, txType, txTypeAtt1, txTypeAtt2, txTypeAtt3, gameId, providerId, reference, roundDetails, roundId, gpTimestamp, createdAt, usedPromo, jackpotId) {
+export async function insertOne(
+  brandUsername, 
+  brandId,
+  username,
+  currentBalance,
+  previousBalance,
+  bonusCurrentBalance,
+  bonusPreviousBalance,
+  bonusAdjustAmount,
+  adjustAmount,
+  txType,
+  txTypeAtt1,
+  txTypeAtt2,
+  txTypeAtt3,
+  gameId,
+  providerId,
+  reference,
+  roundDetails,
+  roundId,
+  gpTimestamp,
+  createdAt,
+  usedPromo,
+  jackpotId
+) {
   const params = {
     TableName: 'midasWager',
     Item: {
@@ -121,7 +144,9 @@ export async function insertOne(brandUsername, brandId, username, currentBalance
   }
 }
 
-export async function getWsConnectionId(brandUsername){
+export async function getWsConnectionId(
+  brandUsername
+){
     const params = {
       TableName: "midasUser",
       Key: {
