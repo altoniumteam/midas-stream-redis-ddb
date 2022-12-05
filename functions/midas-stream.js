@@ -276,16 +276,13 @@ async function processIon(ionRecord) {
       return console.log("data update ke dynamo dan ws skipped");
     } else {
       // DDB updateBalance
-      if (activeWallet == 'MAIN') {
-        await updateBalance(brandUsername, previousBalance, currentBalance, bonusCurrentBalance, bonusPreviousBalance);   
+      if (txTypeAtt1 == 'swap') {
+        await updateCryptoBalance(brandUsername, currency, cryptoCurrentBalance, cryptoPreviousBalance, targetCurrency, targetCryptoCurrentBalance, targetCryptoPreviousBalance, txTypeAtt1);
       } else {
-        switch (txTypeAtt1) {
-          case 'swap':
-            await updateCryptoBalance(brandUsername, currency, cryptoCurrentBalance, cryptoPreviousBalance, targetCurrency, targetCryptoCurrentBalance, targetCryptoPreviousBalance, txTypeAtt1);
-            break;
-          default:
-            await updateCryptoBalance(brandUsername, activeWallet, cryptoBalance[activeWallet], cryptoPreviousBalance[activeWallet]);
-            break;
+        if (activeWallet == 'MAIN') {
+          await updateBalance(brandUsername, previousBalance, currentBalance, bonusCurrentBalance, bonusPreviousBalance);
+        } else {
+          await updateCryptoBalance(brandUsername, activeWallet, cryptoBalance[activeWallet], cryptoPreviousBalance[activeWallet]);
         }
       }
       
