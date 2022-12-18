@@ -16,14 +16,14 @@ export async function sendMessage({ url, payload }) {
     },
   };
 
-  console.log("PARAMS: " + JSON.stringify(params));
+  // console.log("PARAMS: " + JSON.stringify(params));
   // console.log('Message Body: ' + b);
 
   try {
     await sqs.sendMessage(params).promise();
     message = "Sent to Journal Queue!";
   } catch (error) {
-    console.log("error SQS SEND: " + JSON.stringify(error));
+    // console.log("error SQS SEND: " + JSON.stringify(error));
     message = error;
     statusCode = 500;
   }

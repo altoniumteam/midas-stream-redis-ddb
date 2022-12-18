@@ -7,6 +7,7 @@ provider:
   memorySize: 512
   stage: ${opt:stage, 'dev'}
   region: ap-southeast-1
+  timeout: 29
   # lambdaHashingVersion: "20201221"  #deprecated
   tracing:
     apiGateway: true

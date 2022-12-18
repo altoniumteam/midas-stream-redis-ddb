@@ -55,7 +55,7 @@ const promiseDeaggregate = (record) =>
 
 async function processIon(ionRecord) {
   // retrieve the version and id from the metadata section of the message
-  console.log("ini record:" + JSON.stringify(ionRecord));
+  // console.log("ini record:" + JSON.stringify(ionRecord));
   // const version = ionRecord.payload.revision.metadata.version.numberValue();
 
   // const id = ionRecord.payload.revision.metadata.id.stringValue();
@@ -150,34 +150,36 @@ async function processIon(ionRecord) {
       ionRecord.targetCryptoCurrentBalance
     const targetCryptoPreviousBalance =
       ionRecord.targetCryptoPreviousBalance
+    const memberLevel =
+      ionRecord.memberLevel;
 
-    debug("*** playerWallet Table, execute! ***");
-    debug(brandUsername);
-    debug(brandId);
-    debug(username);
-    debug(previousBalance);
-    debug(currentBalance);
-    debug(bonusCurrentBalance);
-    debug(bonusPreviousBalance);
-    debug(bonusAdjustAmount);
-    debug(activeWallet);
-    debug(cryptoBalance);
-    debug(adjustAmount);
-    debug(txType);
-    debug(txTypeAtt1);
-    debug(txTypeAtt2);
-    debug(txTypeAtt3);
-    debug(gameId);
-    debug(providerId);
-    debug(reference);
-    debug(roundDetails);
-    debug(roundId);
-    debug(gpTimestamp);
-    debug(createdAt);
-    debug(usedPromo);
-    debug(jackpotId);
-    debug(cryptoPreviousBalance);
-    debug(bonusStatistic);
+    // debug("*** playerWallet Table, execute! ***");
+    // debug(brandUsername);
+    // debug(brandId);
+    // debug(username);
+    // debug(previousBalance);
+    // debug(currentBalance);
+    // debug(bonusCurrentBalance);
+    // debug(bonusPreviousBalance);
+    // debug(bonusAdjustAmount);
+    // debug(activeWallet);
+    // debug(cryptoBalance);
+    // debug(adjustAmount);
+    // debug(txType);
+    // debug(txTypeAtt1);
+    // debug(txTypeAtt2);
+    // debug(txTypeAtt3);
+    // debug(gameId);
+    // debug(providerId);
+    // debug(reference);
+    // debug(roundDetails);
+    // debug(roundId);
+    // debug(gpTimestamp);
+    // debug(createdAt);
+    // debug(usedPromo);
+    // debug(jackpotId);
+    // debug(cryptoPreviousBalance);
+    // debug(bonusStatistic);
 
     // await client.quit();
 
@@ -241,7 +243,7 @@ async function processIon(ionRecord) {
       bonusStatistic,
     };
 
-    console.log("PAYLOAD: " + JSON.stringify(payload));
+    // console.log("PAYLOAD: " + JSON.stringify(payload));
 
     // sent to SQS Journal
     const sqsMessage = await sendMessage({
@@ -249,30 +251,40 @@ async function processIon(ionRecord) {
       payload: JSON.stringify(payload),
     });
 
-    console.log("SQS Journal: " + JSON.stringify(sqsMessage));
+    // console.log("SQS Journal: " + JSON.stringify(sqsMessage));
 
     const sqsMessageStatistic = await sendMessage({
       url: StatisticUrl,
       payload: JSON.stringify(payload),
     });
 
-    console.log("SQS: " + JSON.stringify(sqsMessageStatistic));
+    // console.log("SQS: " + JSON.stringify(sqsMessageStatistic));
 
     const sqsMessageBonusSystem = await sendMessage({
       url: BonusSystemUrl,
       payload: JSON.stringify(payload),
     });
 
-    console.log("SQS: " + JSON.stringify(sqsMessageBonusSystem));
+    // console.log("SQS: " + JSON.stringify(sqsMessageBonusSystem));
 
     // DDB Wager insertion
     // await insertOne(brandUsername, brandId, username, currentBalance, previousBalance, bonusCurrentBalance, bonusPreviousBalance, bonusAdjustAmount, adjustAmount, txType, txTypeAtt1, txTypeAtt2, txTypeAtt3, gameId, providerId, reference, roundDetails, roundId, gpTimestamp, createdAt, usedPromo, jackpotId);
     const redisKey = "pdc:" + brandUsername;
     // selfmade optimistic lock :D
     const invoker = await redisCache(client, redisKey, createdAt);
-    console.log("data Redis:" + (createdAt < invoker));
+    // console.log(`createdAt: ${createdAt}, pdc: ${invoker}, ` + (createdAt - invoker));
+    // console.log(`createdAt: ${txTypeAtt1}: ` + createdAt);
+    const ca = new Date(createdAt);
+    const i = new Date(invoker);
 
-    if (createdAt < invoker) {
+    const pdcChecker = ca < i;
+
+    if (pdcChecker == false) {
+      //updatepdc
+      await client.set(redisKey, createdAt.toString());
+    };
+
+    if (pdcChecker === true) {
       return console.log("data update ke dynamo dan ws skipped");
     } else {
       // DDB updateBalance
@@ -285,6 +297,10 @@ async function processIon(ionRecord) {
           await updateCryptoBalance(brandUsername, activeWallet, cryptoBalance[activeWallet], cryptoPreviousBalance[activeWallet]);
         }
       }
+
+      // if (txTypeAtt1 === 'result'){
+      //   await new Promise((r) => setTimeout(r, 1200))
+      // }
       
       //start: update player balance websocket
       console.log(brandUsername);
