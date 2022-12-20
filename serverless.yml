@@ -15,7 +15,7 @@ provider:
   environment:
     JournalUrl: "https://sqs.ap-southeast-1.amazonaws.com/271524046545/journal-queue"
     StatisticUrl: "https://sqs.ap-southeast-1.amazonaws.com/271524046545/StatisticQueue"
-    BonusSystemUrl: "https://sqs.ap-southeast-1.amazonaws.com/271524046545/BonusSystemQueue"
+    CampaignSystemUrl: "https://sqs.ap-southeast-1.amazonaws.com/271524046545/CampaignSystemQueue"
 
 plugins:
   - serverless-iam-roles-per-function
@@ -72,7 +72,7 @@ functions:
         Resource:
           - !Sub "arn:aws:sqs:ap-southeast-1:271524046545:journal-queue"
           - !Sub "arn:aws:sqs:ap-southeast-1:271524046545:StatisticQueue"
-          - !Sub "arn:aws:sqs:ap-southeast-1:271524046545:BonusSystemQueue"
+          - !Sub "arn:aws:sqs:ap-southeast-1:271524046545:CampaignSystemQueue"
 
     # JournalQueue:
     #   Type: AWS::SQS::Queue

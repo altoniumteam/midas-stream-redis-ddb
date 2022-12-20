@@ -25,7 +25,7 @@ const computeChecksums = true;
 
 const JournalUrl = process.env.JournalUrl;
 const StatisticUrl = process.env.StatisticUrl;
-const BonusSystemUrl = process.env.BonusSystemUrl;
+const CampaignSystemUrl = process.env.CampaignSystemUrl;
 
 const redisCache = async (client, key, value) => {
   console.log("START", value);
@@ -225,8 +225,8 @@ async function processIon(ionRecord) {
 
     // sent to Bonus
 
-    const sqsMessageBonusSystem = await sendMessage({
-      url: BonusSystemUrl,
+    const sqsMessageCampaignSystem = await sendMessage({
+      url: CampaignSystemUrl,
       payload: JSON.stringify(payload),
     });
 
