@@ -74,47 +74,90 @@ async function processIon(ionRecord) {
     //delete
   } else {
     // if (ionRecord.payload.tableInfo.tableName.stringValue() == "playerWallet") {
-    const brandUsername = ionRecord.brandUsername;
-    const brandId = ionRecord.brandId;
-    const username = ionRecord.username;
-    const previousBalance = ionRecord.previousBalance;
-    const currentBalance = ionRecord.currentBalance;
-    const bonusCurrentBalance = ionRecord.bonusCurrentBalance;
-    const bonusPreviousBalance = ionRecord.bonusPreviousBalance;
-    const activeWallet = ionRecord.activeWallet;
-    const cryptoBalance = ionRecord.cryptoBalance;
-    const bonusAdjustAmount = ionRecord.bonusAdjustAmount;
-    const adjustAmount = ionRecord.adjustAmount;
-    const txType = ionRecord.txType;
-    const txTypeAtt1 = ionRecord.txTypeAtt1;
-    const txTypeAtt2 = ionRecord.txTypeAtt2;
-    const txTypeAtt3 = ionRecord.txTypeAtt3;
-    const gameId = ionRecord.metadata.gameId;
-    const providerId = ionRecord.metadata.providerName;
-    const reference = ionRecord.metadata.reference;
-    const roundDetails = ionRecord.metadata.roundDetails;
-    const roundId = ionRecord.metadata.roundId;
-    const bonusCode = ionRecord.metadata.bonusCode;
-    const gpTimestamp = ionRecord.metadata.gpTimestamp;
-    const createdAt = ionRecord.createdAt;
-    const usedPromo = ionRecord.metadata.usedPromo;
-    const validBetAmount = ionRecord.validBetAmount;
-    const promoWinAmount = ionRecord.metadata.promoWinAmount;
-    const jackpotId = ionRecord.metadata.jackpotId;
-    const promoCampaignType = ionRecord.metadata.promoCampaignType;
-    const promoCampaignId = ionRecord.metadata.promoCampaignId;
-    const promoWinReference = ionRecord.metadata.promoWinReference;
-    const campaignType = ionRecord.metadata.campaignType;
-    const campaignId = ionRecord.metadata.campaignId;
-    const statistic = ionRecord.statistic;
-    const campaignStatistic = ionRecord.campaignStatistic;
-    const currency = ionRecord.currency;
-    const targetCurrency = ionRecord.targetCurrency;
-    const cryptoCurrentBalance = ionRecord.cryptoCurrentBalance;
-    const cryptoPreviousBalance = ionRecord.cryptoPreviousBalance;
-    const targetCryptoCurrentBalance = ionRecord.targetCryptoCurrentBalance;
-    const targetCryptoPreviousBalance = ionRecord.targetCryptoPreviousBalance;
-    const memberLevel = ionRecord.memberLevel;
+    const brandUsername =
+      ionRecord.brandUsername;
+    const brandId = 
+      ionRecord.brandId;
+    const username = 
+      ionRecord.username;
+    const previousBalance =
+      ionRecord.previousBalance;
+    const currentBalance =
+      ionRecord.currentBalance;
+    const bonusCurrentBalance =
+      ionRecord.bonusCurrentBalance;
+    const bonusPreviousBalance =
+      ionRecord.bonusPreviousBalance;
+    const activeWallet =
+      ionRecord.activeWallet;
+    const cryptoBalance =
+      ionRecord.cryptoBalance;
+    const previousCryptoBalance =
+      ionRecord.previousCryptoBalance;
+    const bonusAdjustAmount =
+      ionRecord.bonusAdjustAmount;
+    const adjustAmount =
+      ionRecord.adjustAmount;
+    const txType =
+      ionRecord.txType;
+    const txTypeAtt1 =
+      ionRecord.txTypeAtt1;
+    const txTypeAtt2 =
+      ionRecord.txTypeAtt2;
+    const txTypeAtt3 =
+      ionRecord.txTypeAtt3;
+    const gameId =
+      ionRecord.metadata.gameId;
+    const providerId =
+      ionRecord.metadata.providerName;
+    const reference =
+      ionRecord.metadata.reference;
+    const roundDetails =
+      ionRecord.metadata.roundDetails;
+    const roundId =
+      ionRecord.metadata.roundId;
+    const bonusCode =
+      ionRecord.metadata.bonusCode;
+    const gpTimestamp =
+      ionRecord.metadata.gpTimestamp;
+    const createdAt = 
+      ionRecord.createdAt;
+    const usedPromo =
+      ionRecord.metadata.usedPromo;
+    const validBetAmount =
+      ionRecord.validBetAmount;
+    const promoWinAmount =
+      ionRecord.metadata.promoWinAmount;
+    const jackpotId =
+      ionRecord.metadata.jackpotId;
+    const promoCampaignType =
+      ionRecord.metadata.promoCampaignType;
+    const promoCampaignId =
+      ionRecord.metadata.promoCampaignId;
+    const promoWinReference =
+      ionRecord.metadata.promoWinReference;
+    const campaignType =
+      ionRecord.metadata.campaignType;
+    const campaignId =
+      ionRecord.metadata.campaignId;
+    const statistic =
+      ionRecord.statistic;
+    const bonusStatistic = 
+      ionRecord.bonusStatistic
+    const currency =
+      ionRecord.currency;
+    const targetCurrency =
+      ionRecord.targetCurrency;
+    const cryptoCurrentBalance =
+      ionRecord.cryptoCurrentBalance
+    const targetCryptoCurrentBalance =
+      ionRecord.targetCryptoCurrentBalance
+    const targetCryptoPreviousBalance =
+      ionRecord.targetCryptoPreviousBalance
+    const campaignStatistic = 
+      ionRecord.campaignStatistic;      
+    // const memberLevel =
+    //   ionRecord.memberLevel;
 
     // debug("*** playerWallet Table, execute! ***");
     // debug(brandUsername);
@@ -158,6 +201,7 @@ async function processIon(ionRecord) {
       bonusAdjustAmount,
       activeWallet,
       cryptoBalance,
+      previousCryptoBalance,
       adjustAmount,
       validBetAmount,
       txType,
@@ -204,9 +248,27 @@ async function processIon(ionRecord) {
         txTypeAtt1 == "Deposit" || txTypeAtt1 == "Withdraw" ? "" : campaignId,
       statistic,
       campaignStatistic,
+      mainCurrency: 'USD',
+      adjustmentAmountToOrigin: null,
+      adjustmentAmountToOriginCurrency: activeWallet,
+      exchangeRate: null,
+      exchangeRateId: null,
+      exchangeRateMeta: null,
+      walletBtcCurrent: cryptoBalance['BTC'],
+      walletBtcPrevious: previousCryptoBalance['BTC'],
+      walletShibaCurrent: cryptoBalance['SHIBA'],
+      walletShibaPrevious: previousCryptoBalance['SHIBA'],
+      walletEthCurrent: cryptoBalance['ETH'],
+      walletEthPrevious: previousCryptoBalance['ETH'],
+      walletBscCurrent: cryptoBalance['BSC'],
+      walletBscPrevious: previousCryptoBalance['BSC'],
+      walletDogeCurrent: cryptoBalance['DOGE'],
+      walletDogePrevious: previousCryptoBalance['DOGE'],
+      walletUsdtCurrent: cryptoBalance['USDT'],
+      walletUsdtPrevious: previousCryptoBalance['USDT'],
     };
 
-    // console.log("PAYLOAD: " + JSON.stringify(payload));
+    console.log("PAYLOAD: " + JSON.stringify(payload));
 
     // sent to SQS Journal
     const sqsMessage = await sendMessage({
@@ -258,7 +320,7 @@ async function processIon(ionRecord) {
           brandUsername,
           currency,
           cryptoCurrentBalance,
-          cryptoPreviousBalance,
+          previousCryptoBalance,
           targetCurrency,
           targetCryptoCurrentBalance,
           targetCryptoPreviousBalance,
@@ -278,7 +340,7 @@ async function processIon(ionRecord) {
             brandUsername,
             activeWallet,
             cryptoBalance[activeWallet],
-            cryptoPreviousBalance[activeWallet]
+            previousCryptoBalance[activeWallet]
           );
         }
       }
