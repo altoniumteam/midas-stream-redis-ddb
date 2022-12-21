@@ -142,23 +142,26 @@ async function processIon(ionRecord) {
       ionRecord.metadata.campaignId;
     const statistic =
       ionRecord.statistic;
-    const bonusStatistic = 
-      ionRecord.bonusStatistic
     const currency =
       ionRecord.currency;
     const targetCurrency =
       ionRecord.targetCurrency;
     const cryptoCurrentBalance =
-      ionRecord.cryptoCurrentBalance
+      ionRecord.cryptoCurrentBalance;
     const targetCryptoCurrentBalance =
-      ionRecord.targetCryptoCurrentBalance
+      ionRecord.targetCryptoCurrentBalance;
     const targetCryptoPreviousBalance =
-      ionRecord.targetCryptoPreviousBalance
+      ionRecord.targetCryptoPreviousBalance;
     const campaignStatistic = 
       ionRecord.campaignStatistic;      
-    // const memberLevel =
-    //   ionRecord.memberLevel;
-
+    const adjustmentAmountToOrigin =
+      ionRecord.adjustmentAmountToOrigin;
+    const exchangeRate = 
+      ionRecord.exchangeRate;
+    const exchangeRateId = 
+      ionRecord.exchangeRateId;
+    const exchangeRateMeta = 
+      ionRecord.exchangeRateMeta;
     // debug("*** playerWallet Table, execute! ***");
     // debug(brandUsername);
     // debug(brandId);
@@ -249,11 +252,11 @@ async function processIon(ionRecord) {
       statistic,
       campaignStatistic,
       mainCurrency: 'USD',
-      adjustmentAmountToOrigin: null,
+      adjustmentAmountToOrigin: adjustmentAmountToOrigin,
       adjustmentAmountToOriginCurrency: activeWallet,
-      exchangeRate: null,
-      exchangeRateId: null,
-      exchangeRateMeta: null,
+      exchangeRate: exchangeRate,
+      exchangeRateId: exchangeRateId,
+      exchangeRateMeta: exchangeRateMeta,
       walletBtcCurrent: cryptoBalance['BTC'],
       walletBtcPrevious: previousCryptoBalance['BTC'],
       walletShibaCurrent: cryptoBalance['SHIBA'],
