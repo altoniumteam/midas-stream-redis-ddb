@@ -314,6 +314,10 @@ async function processIon(ionRecord) {
       await client.set(redisKey, createdAt.toString());
     }
 
+    if (txTypeAtt1 == 'result') {
+      await new Promise((r) => setTimeout(r, 80))
+    }
+
     if (pdcChecker === true) {
       return console.log("data update ke dynamo dan ws skipped");
     } else {
