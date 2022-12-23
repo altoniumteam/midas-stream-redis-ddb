@@ -199,7 +199,7 @@ async function processIon(ionRecord) {
       campaignWithdrawLock,
       campaignStatistic,
       mainCurrency: "USD",
-      adjustmentAmountToOrigin: adjustmentAmountToOrigin,
+      adjustmentAmountToOrigin: (adjustmentAmountToOrigin) ? adjustmentAmountToOrigin : 0,
       adjustmentAmountToOriginCurrency: activeWallet,
       exchangeRate: exchangeRate,
       exchangeRateId: exchangeRateId,
