@@ -332,7 +332,7 @@ async function processIon(ionRecord) {
             },
             ETH: {
               currentBalance: cryptoBalance["ETH"],
-              currencyName: 'BTC',
+              currencyName: 'ETH',
               type: 'CRYPTO'              
             },
             DOGE: {
