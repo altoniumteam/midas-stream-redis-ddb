@@ -1,4 +1,4 @@
-const { createClient } = require("redis");
+const { client } = require('./helper/midas-redis-helper');
 const { load, dumpPrettyText } = require("ion-js");
 const { deaggregateSync } = require("aws-kinesis-agg");
 const { debug } = require("@dazn/lambda-powertools-logger");
@@ -9,17 +9,6 @@ const {
 } = require("./helper/midas-ddb-helper");
 const { sendWebsocketMessage } = require("./helper/update-balance-websocket");
 const { sendMessage } = require("./helper/midas-sqs");
-
-let client;
-
-if (typeof client === "undefined") {
-  client = createClient({
-    url: "redis://midascache.c7fgoy.ng.0001.apse1.cache.amazonaws.com:6379",
-  });
-  client.connect();
-} else {
-  console.log("socket masih kebuka");
-}
 
 const computeChecksums = true;
 
@@ -259,8 +248,8 @@ async function processIon(ionRecord) {
       exchangeRateMeta: exchangeRateMeta,
       walletBtcCurrent: cryptoBalance['BTC'],
       walletBtcPrevious: previousCryptoBalance['BTC'],
-      walletShibaCurrent: cryptoBalance['SHIBA'],
-      walletShibaPrevious: previousCryptoBalance['SHIBA'],
+      walletShibaCurrent: cryptoBalance['SHIB'],
+      walletShibaPrevious: previousCryptoBalance['SHIB'],
       walletEthCurrent: cryptoBalance['ETH'],
       walletEthPrevious: previousCryptoBalance['ETH'],
       walletBscCurrent: cryptoBalance['BSC'],
@@ -315,7 +304,7 @@ async function processIon(ionRecord) {
     }
 
     if (txTypeAtt1 == 'result') {
-      await new Promise((r) => setTimeout(r, 80))
+      await new Promise((r) => setTimeout(r, 50))
     }
 
     if (pdcChecker === true) {
@@ -363,15 +352,52 @@ async function processIon(ionRecord) {
         //wsConnectionId not found
       } else {
         //hit websocket to update
+
         const wsMessage = {
-          MAIN: currentBalance,
-          BONUS: bonusCurrentBalance,
-          BTC: cryptoBalance["BTC"],
-          ETH: cryptoBalance["ETH"],
-          DOGE: cryptoBalance["DOGE"],
-          BSC: cryptoBalance["BSC"],
-          SHIB: cryptoBalance["SHIB"],
-          USDT: cryptoBalance["USDT"],
+          brandUsername: payload.brandUsername,
+          activeWallet: payload.activeWallet,
+          walletBalance: {
+            MAIN: {
+              currentBalance,
+              currencyName: 'MAIN',
+              type: 'FIAT'
+            },
+            BONUS: {
+              currentBalance,
+              currencyName: 'BONUS',
+              type: 'FIAT'              
+            },
+            BTC: {
+              currentBalance: cryptoBalance["BTC"],
+              currencyName: 'BTC',
+              type: 'CRYPTO'          
+            },
+            ETH: {
+              currentBalance: cryptoBalance["ETH"],
+              currencyName: 'BTC',
+              type: 'CRYPTO'              
+            },
+            DOGE: {
+              currentBalance: cryptoBalance["DOGE"],
+              currencyName: 'DOGE',
+              type: 'CRYPTO'
+            },
+            BSC: {
+              currentBalance: cryptoBalance["BSC"],
+              currencyName: 'BSC',
+              type: 'CRYPTO'
+            },
+            SHIB: {
+              currentBalance: cryptoBalance["SHIB"],
+               currencyName: 'SHIB',
+              type: 'CRYPTO'             
+            },
+            USDT: {
+              currentBalance: cryptoBalance["USDT"],
+              currencyName: 'USDT',
+              type: 'CRYPTO'             
+            },
+          }
         };
 
         await sendWebsocketMessage(
