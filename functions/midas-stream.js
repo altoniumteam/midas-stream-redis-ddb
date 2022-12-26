@@ -359,6 +359,16 @@ async function processIon(ionRecord) {
               currencyName: 'USDT',
               type: 'CRYPTO'             
             },
+            IDRT: {
+              currentBalance: cryptoBalance["IDRT"],
+              currencyName: 'IDRT',
+              type: 'CRYPTO'             
+            },
+            BIDR: {
+              currentBalance: cryptoBalance["BIDR"],
+              currencyName: 'BIDR',
+              type: 'CRYPTO'             
+            },
           }
         };
 
