@@ -216,6 +216,10 @@ async function processIon(ionRecord) {
       walletDogePrevious: previousCryptoBalance['DOGE'],
       walletUsdtCurrent: cryptoBalance['USDT'],
       walletUsdtPrevious: previousCryptoBalance['USDT'],
+      walletIdrtCurrent: cryptoBalance['IDRT'],
+      walletIdrtPrevious: previousCryptoBalance['IDRT'],
+      walletBidrCurrent: cryptoBalance['BIDR'],
+      walletBidrPrevious: previousCryptoBalance['BIDR'],
     };
 
     console.log("PAYLOAD: " + JSON.stringify(payload));
