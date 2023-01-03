@@ -1,4 +1,4 @@
-const { client } = require('./helper/midas-redis-helper');
+const { client } = require("./helper/midas-redis-helper");
 const { load, dumpPrettyText } = require("ion-js");
 const { deaggregateSync } = require("aws-kinesis-agg");
 const { debug } = require("@dazn/lambda-powertools-logger");
@@ -199,27 +199,29 @@ async function processIon(ionRecord) {
       campaignWithdrawLock,
       campaignStatistic,
       mainCurrency: "USD",
-      adjustmentAmountToOrigin: (adjustmentAmountToOrigin) ? adjustmentAmountToOrigin : 0,
+      adjustmentAmountToOrigin: adjustmentAmountToOrigin
+        ? adjustmentAmountToOrigin
+        : 0,
       adjustmentAmountToOriginCurrency: activeWallet,
       exchangeRate: exchangeRate,
       exchangeRateId: exchangeRateId,
       exchangeRateMeta: exchangeRateMeta,
-      walletBtcCurrent: cryptoBalance['BTC'],
-      walletBtcPrevious: previousCryptoBalance['BTC'],
-      walletShibaCurrent: cryptoBalance['SHIB'],
-      walletShibaPrevious: previousCryptoBalance['SHIB'],
-      walletEthCurrent: cryptoBalance['ETH'],
-      walletEthPrevious: previousCryptoBalance['ETH'],
-      walletBscCurrent: cryptoBalance['BSC'],
-      walletBscPrevious: previousCryptoBalance['BSC'],
-      walletDogeCurrent: cryptoBalance['DOGE'],
-      walletDogePrevious: previousCryptoBalance['DOGE'],
-      walletUsdtCurrent: cryptoBalance['USDT'],
-      walletUsdtPrevious: previousCryptoBalance['USDT'],
-      walletIdrtCurrent: cryptoBalance['IDRT'],
-      walletIdrtPrevious: previousCryptoBalance['IDRT'],
-      walletBidrCurrent: cryptoBalance['BIDR'],
-      walletBidrPrevious: previousCryptoBalance['BIDR'],
+      walletBtcCurrent: cryptoBalance["BTC"],
+      walletBtcPrevious: previousCryptoBalance["BTC"],
+      walletShibaCurrent: cryptoBalance["SHIB"],
+      walletShibaPrevious: previousCryptoBalance["SHIB"],
+      walletEthCurrent: cryptoBalance["ETH"],
+      walletEthPrevious: previousCryptoBalance["ETH"],
+      walletBscCurrent: cryptoBalance["BSC"],
+      walletBscPrevious: previousCryptoBalance["BSC"],
+      walletDogeCurrent: cryptoBalance["DOGE"],
+      walletDogePrevious: previousCryptoBalance["DOGE"],
+      walletUsdtCurrent: cryptoBalance["USDT"],
+      walletUsdtPrevious: previousCryptoBalance["USDT"],
+      walletIdrtCurrent: cryptoBalance["IDRT"],
+      walletIdrtPrevious: previousCryptoBalance["IDRT"],
+      walletBidrCurrent: cryptoBalance["BIDR"],
+      walletBidrPrevious: previousCryptoBalance["BIDR"],
     };
 
     console.log("PAYLOAD: " + JSON.stringify(payload));
@@ -265,8 +267,8 @@ async function processIon(ionRecord) {
       await client.set(redisKey, createdAt.toString());
     }
 
-    if (txTypeAtt1 == 'result') {
-      await new Promise((r) => setTimeout(r, 50))
+    if (txTypeAtt1 == "result") {
+      await new Promise((r) => setTimeout(r, 50));
     }
 
     if (pdcChecker === true) {
@@ -321,55 +323,55 @@ async function processIon(ionRecord) {
           walletBalance: {
             MAIN: {
               currentBalance,
-              currencyName: 'MAIN',
-              type: 'FIAT'
+              currencyName: "MAIN",
+              type: "FIAT",
             },
             BONUS: {
-              currentBalance,
-              currencyName: 'BONUS',
-              type: 'FIAT'              
+              bonusCurrentBalance,
+              currencyName: "BONUS",
+              type: "FIAT",
             },
             BTC: {
               currentBalance: cryptoBalance["BTC"],
-              currencyName: 'BTC',
-              type: 'CRYPTO'          
+              currencyName: "BTC",
+              type: "CRYPTO",
             },
             ETH: {
               currentBalance: cryptoBalance["ETH"],
-              currencyName: 'ETH',
-              type: 'CRYPTO'              
+              currencyName: "ETH",
+              type: "CRYPTO",
             },
             DOGE: {
               currentBalance: cryptoBalance["DOGE"],
-              currencyName: 'DOGE',
-              type: 'CRYPTO'
+              currencyName: "DOGE",
+              type: "CRYPTO",
             },
             BSC: {
               currentBalance: cryptoBalance["BSC"],
-              currencyName: 'BSC',
-              type: 'CRYPTO'
+              currencyName: "BSC",
+              type: "CRYPTO",
             },
             SHIB: {
               currentBalance: cryptoBalance["SHIB"],
-               currencyName: 'SHIB',
-              type: 'CRYPTO'             
+              currencyName: "SHIB",
+              type: "CRYPTO",
             },
             USDT: {
               currentBalance: cryptoBalance["USDT"],
-              currencyName: 'USDT',
-              type: 'CRYPTO'             
+              currencyName: "USDT",
+              type: "CRYPTO",
             },
             IDRT: {
               currentBalance: cryptoBalance["IDRT"],
-              currencyName: 'IDRT',
-              type: 'CRYPTO'             
+              currencyName: "IDRT",
+              type: "CRYPTO",
             },
             BIDR: {
               currentBalance: cryptoBalance["BIDR"],
-              currencyName: 'BIDR',
-              type: 'CRYPTO'             
+              currencyName: "BIDR",
+              type: "CRYPTO",
             },
-          }
+          },
         };
 
         await sendWebsocketMessage(
