@@ -327,7 +327,7 @@ async function processIon(ionRecord) {
               type: "FIAT",
             },
             BONUS: {
-              bonusCurrentBalance,
+              currentBalance: bonusCurrentBalance,
               currencyName: "BONUS",
               type: "FIAT",
             },
